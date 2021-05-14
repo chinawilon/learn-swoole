@@ -1,0 +1,25 @@
+{
+  "name": "chinawilon/learn-swoole",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "wilon",
+      "email": "5wilon@sina.com"
+    }
+  ],
+  "require": {
+    "ext-json": "*",
+    "ext-redis": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "classmap": ["Log.php"]
+  },
+  "require-dev": {
+    "swoole/ide-helper": " ^4.5"
+  }
+}

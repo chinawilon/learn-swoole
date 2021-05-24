@@ -4,12 +4,12 @@
 namespace App;
 
 
-use Swoole\Coroutine\Server\Connection;
+use App\Connection\ConnectionInterface;
 
 class BuffIO
 {
     /**
-     * @var Connection
+     * @var ConnectionInterface
      */
     private $connection;
 
@@ -18,7 +18,7 @@ class BuffIO
      */
     private $left = '';
 
-    public function __construct(Connection $connection)
+    public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
     }
@@ -31,7 +31,7 @@ class BuffIO
                 $this->left = substr($this->left, $n);
                 return $msg;
             }
-            if (! $payload = $this->connection->recv() ) {
+            if (! $payload = $this->connection->read() ) {
                 return '';
             }
             $this->left .= $payload;
@@ -47,6 +47,6 @@ class BuffIO
     {
         $msg = $this->left;
         $this->left = '';
-        return $this->connection->send($msg);
+        return $this->connection->write($msg);
     }
 }

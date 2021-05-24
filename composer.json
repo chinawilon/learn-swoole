@@ -11,7 +11,9 @@
   ],
   "require": {
     "ext-json": "*",
-    "ext-redis": "*"
+    "ext-redis": "*",
+    "ext-posix": "*",
+    "ext-sockets": "*"
   },
   "autoload": {
     "psr-4": {

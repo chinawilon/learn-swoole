@@ -16,12 +16,15 @@ class Log
     private static function string(array $args): string
     {
         $msg = '';
+        $space = '';
         foreach ($args as $arg) {
             if (is_scalar($arg)) {
-                $msg .= $arg;
+                $msg .= $space.$arg;
+                $space = ' ';
                 continue;
             }
-            $msg .= print_r($arg, true);
+            $msg .= $space . print_r($arg, true);
+            $space = ' ';
         }
         return $msg;
     }

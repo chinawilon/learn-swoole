@@ -4,6 +4,7 @@
 namespace App;
 
 
+use App\Connection\ConnectionInterface;
 use Swoole\Atomic;
 use Swoole\Coroutine\Server\Connection;
 
@@ -24,7 +25,7 @@ class Protocol
         $this->cache = $cache;
     }
 
-    public function handle(Connection $connection): void
+    public function handle(ConnectionInterface $connection): void
     {
         $reader = new BuffIO($connection);
         $writer = new BuffIO($connection);

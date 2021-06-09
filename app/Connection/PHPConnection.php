@@ -31,4 +31,9 @@ class PHPConnection implements ConnectionInterface
         return fread($this->connection, 1024) ?? '';
     }
 
+    public function close(): bool
+    {
+        return fclose($this->connection);
+    }
+
 }

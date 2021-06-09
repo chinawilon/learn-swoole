@@ -6,7 +6,7 @@ namespace App\Server;
 
 use App\Cache;
 use App\Connection\PHPConnection;
-use App\Protocol;
+use App\Protocol\StreamProtocol;
 use Log;
 use RuntimeException;
 
@@ -17,14 +17,14 @@ class SocketServer
      */
     private $server;
     /**
-     * @var Protocol
+     * @var StreamProtocol
      */
     private $protocol;
 
     public function __construct(string $host, int $port, Cache $cache)
     {
         $cache->connect();
-        $this->protocol = new Protocol($cache);
+        $this->protocol = new StreamProtocol($cache);
         $this->server = stream_socket_server("tcp://$host:$port", $errno, $errstr);
         if (! $this->server ) {
             Log::error("stream_socket_server error", $errno, $errstr);

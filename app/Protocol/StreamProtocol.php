@@ -1,14 +1,15 @@
 <?php
 
 
-namespace App;
+namespace App\Protocol;
 
 
+use App\BuffIO;
+use App\Cache;
 use App\Connection\ConnectionInterface;
 use Swoole\Atomic;
-use Swoole\Coroutine\Server\Connection;
 
-class Protocol
+class StreamProtocol
 {
     /**
      * @var Atomic
@@ -40,7 +41,7 @@ class Protocol
                 $this->subscribe($writer, $reader);
                 break;
             default:
-                $connection->send('404 forbidden');
+                $connection->write('404 forbidden');
                 $connection->close();
         }
     }

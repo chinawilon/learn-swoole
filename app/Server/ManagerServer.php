@@ -8,7 +8,7 @@ use App\Cache;
 use App\Connection\SwooleConnection;
 use App\Engine;
 use App\Processor;
-use App\Protocol;
+use App\Protocol\StreamProtocol;
 use Swoole\Coroutine\Server;
 use Swoole\Coroutine\Server\Connection;
 use Swoole\Process\Manager;
@@ -33,7 +33,7 @@ class ManagerServer
         $this->pm->addBatch(4, function () use($host, $port, $cache) {
             $cache->connect();
             $server = new Server($host, $port, false, true);
-            $protocol = new Protocol($cache);
+            $protocol = new StreamProtocol($cache);
             $server->handle(function (Connection $connection) use($protocol) {
                 $protocol->handle(new SwooleConnection($connection));
             });

@@ -3,12 +3,14 @@
 
 namespace App\Server;
 
+
 use App\Connection\PHPConnection;
 use App\Protocol\SegProtocol;
 use Log;
 use RuntimeException;
+use Swoole\Event;
 
-class PHPServer
+class EpollServer
 {
     /**
      * @var false|resource
@@ -26,24 +28,16 @@ class PHPServer
 
     public function start(): void
     {
-        $connections = [];
         $handlers = [];
-        for (;;) {
-            if ($conn = @stream_socket_accept($this->server, empty($connections) ? -1 : 0, $peer)) {
-                stream_set_blocking($conn, false);
+        Event::add($this->server, function () use(&$handlers) {
+            if ($conn = @stream_socket_accept($this->server,  -1, $peer)) {
                 Log::info($peer, 'connected');
-                $connections[$peer] = $conn;
-            }
-            $readers = $connections;
-            $writers = null;
-            $except = null;
-            if (@stream_select($readers, $writers, $except, 0, 0)) {
-                foreach ($connections as $conn) {
-                    $peer = stream_socket_get_name($conn, true);
+                Event::add($conn, function () use($conn, $peer, &$handlers) {
                     if (feof($conn)) {
                         Log::info($peer, 'closed');
-                        unset($connections[$peer], $handlers[$peer]);
-                        continue;
+                        unset($handlers[$peer]);
+                        Event::del($conn);
+                        return;
                     }
                     if ($data = fread($conn, 1024)) {
                         if (!isset($handlers[$peer])) {
@@ -51,9 +45,12 @@ class PHPServer
                         }
                         $handler = $handlers[$peer];
                         $handler->handle($data);
+//                        $event->dispatch('onReceive', $data);
                     }
-                }
+                });
             }
-        }
+        });
+        Log::info('wait');
+        Event::wait();
     }
 }

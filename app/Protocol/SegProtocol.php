@@ -1,12 +1,13 @@
 <?php
 
 
-namespace App;
+namespace App\Protocol;
 
 
+use App\Connection\ConnectionInterface;
 use Log;
 
-class Handler
+class SegProtocol
 {
     /**
      * @var string
@@ -26,9 +27,9 @@ class Handler
     /**
      * Handler constructor.
      *
-     * @param $connection
+     * @param ConnectionInterface $connection
      */
-    public function __construct($connection)
+    public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
     }
@@ -52,8 +53,9 @@ class Handler
                 $payload = substr($this->left, 4, $length);
 //                Log::info($payload);
                 $this->left = substr($this->left, $total);
-                $send = mt_rand(10000, 99999);
-                fwrite($this->connection, pack('Na*', strlen($send), $send));
+                $send = random_int(10000, 99999);
+//                fwrite($this->connection, pack('Na*', strlen($send), $send));
+                $this->connection->write(pack('Na*', strlen($send), $send));
             }
         }
     }

@@ -28,4 +28,8 @@ class SwooleConnection implements ConnectionInterface
         return $this->connection->recv() ?? '';
     }
 
+    public function close(): bool
+    {
+        return $this->connection->close();
+    }
 }

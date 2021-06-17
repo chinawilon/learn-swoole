@@ -4,7 +4,7 @@
 use App\Cache;
 use function Co\run;
 
-include __DIR__.'/../vendor/autoload.php';
+include __DIR__.'/../bootstrap/app.php';
 
 //
 //run(function () {
@@ -19,5 +19,6 @@ include __DIR__.'/../vendor/autoload.php';
 //$server = new \App\Server\ManagerServer('0.0.0.0', 8080, $cache);
 //$server = new \App\Server\PHPServer('0.0.0.0', 8080);
 //$server = new \App\Server\EpollServer('0.0.0.0', 8080);
-$server = new \App\Server\SwooleServer('0.0.0.0', 8080);
+//$server = new \App\Server\SwooleServer('0.0.0.0', 8080);
+$server = new \App\Server\WilonServer('0.0.0.0', 8080);
 $server->start();

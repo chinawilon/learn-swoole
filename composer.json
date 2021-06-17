@@ -13,11 +13,13 @@
     "ext-json": "*",
     "ext-redis": "*",
     "ext-posix": "*",
-    "ext-sockets": "*"
+    "ext-sockets": "*",
+    "ext-pcntl": "*"
   },
   "autoload": {
     "psr-4": {
-      "App\\": "app/"
+      "App\\": "app/",
+      "Wilon\\": "lib/wilon"
     },
     "classmap": ["Log.php"]
   },

@@ -2,7 +2,7 @@
 
 # SWOOLE技术培训
 
-本系列课程献给我在[玩动网络](http://www.itowan.com)小伙伴
+本系列课程献给在[玩动网络](http://www.itowan.com)的技术小伙伴
 
 ## Day 1 swoole基础知识
 

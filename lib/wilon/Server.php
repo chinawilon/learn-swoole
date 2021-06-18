@@ -1,8 +1,8 @@
 <?php
 
+declare(ticks=1);
 
 namespace Wilon;
-
 
 use Log;
 use RuntimeException;
@@ -41,11 +41,20 @@ class Server
      * @var array
      */
     private $socks;
+    /**
+     * @var bool
+     */
+    private $running = true;
 
     public function __construct(string $host, int $port)
     {
         $this->host = $host;
         $this->port = $port;
+        $this->buildProcess();
+    }
+
+    public function buildProcess(): void
+    {
         // worker process
         $this->master = new Process(function () {
             $pm = new Manager();
@@ -95,7 +104,6 @@ class Server
             }
             $pm->start();
         });
-
     }
 
     public function sendEvent($client, string $event, string $peer, string $data = '')
@@ -139,7 +147,7 @@ class Server
 
         $connections = [];
         $socks = [];
-        for (;;) {
+        while ($this->running) {
             if ($conn = @stream_socket_accept($server, empty($connections) ? -1 : 0, $peer)) {
                 stream_set_blocking($conn, false);
                 $sock = $this->getClient($peer);
@@ -187,6 +195,9 @@ class Server
                 }
             }
         }
+
+        // server end
+        Log::info('Master process end !');
     }
 
     public function getClient(string $peer)
@@ -210,14 +221,43 @@ class Server
         return RUNTIME_PATH.'/'.$workerId.'.sock';
     }
 
+
+    public function shutdown(): void
+    {
+        $this->running = false;
+    }
+
+    public function handleSignal(): void
+    {
+        Process::signal(SIGCHLD, function ($signo, $siginfo) {
+            if ( isset($siginfo['pid'] )) {
+                // manager process end
+                Process::wait();
+                Log::info('Manager process end !');
+                Log::info('Shutdown master process...');
+                $this->shutdown();
+            }
+        });
+        Process::signal(SIGTERM, function () {
+            Process::kill($this->master->pid, SIGTERM);
+        });
+        Process::signal(SIGUSR1, function () {
+            Process::kill($this->master->pid, SIGUSR1);
+        });
+        Process::signal(SIGUSR2, function () {
+            Process::kill($this->master->pid, SIGUSR2);
+        });
+    }
+
     public function start(): void
     {
         // master process
         $this->master->start();
 
+        // handle signal
+        $this->handleSignal();
+
         // handle request
         $this->handleSocket();
-
-        Process::wait();
     }
 }

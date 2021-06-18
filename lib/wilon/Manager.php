@@ -82,14 +82,14 @@ class Manager
             if ( $pid < 0 ) {
                 break;
             }
-            // all right
-            if ( $pid === 0 || $this->restart === false) {
+            // all process ok
+            if ( $pid === 0 ) {
                 sleep(1);
                 continue;
             }
 
-            // new fork
-            if ( pcntl_wifexited($status) || pcntl_wifsignaled($status) ) {
+            // restart and fork new process
+            if ( $this->restart  && (pcntl_wifexited($status) || pcntl_wifsignaled($status)) ) {
                 $workerId = array_search($pid, $this->pids, true);
                 $process = $this->process($workerId, $this->startFuncMap[$workerId]);
                 $this->pids[$workerId] = $process->pid;
